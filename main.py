@@ -1,133 +1,101 @@
-class Entity:
-    name = ""
-    status = "Alive"
+import random
+
+
+class Animal:
+    type = ''
+    name = ''
+    status = ''
+    age = 0
     health = 0
-    heal = 0
-    base_damage = 0
-    equipped = None
+    speed = 0
 
-    def healing(self,):
-        self.health += self.heal
-
-
-    def attack(self, enemy):
-        if enemy.status == "Alive":
-            if self.equipped is not None:
-                damage = self.equipped.damage
-            else:
-                damage = self.base_damage
-            enemy.health -= damage
-            enemy.check()
-
-    def check(self):
-        if self.health <= 0:
-            self.health = 0
-            self.status = "Dead"
-
-    def equip(self, Item):
-        self.equipped = Item
-
-    def __repr__(self):
-        return "Entity: {}, Status: {}, Health: {}, Equipped: {}".format(
-            self.name, self.status, self.health, self.equipped
-        )
+    def __init__(self, type, name, status, age, health, speed):
+        self.type = type
+        self.name = name
+        self.status = status
+        self.age = age
+        self.health = health
+        self.speed = speed
+        print("new ", name, " is created, health = ", health)
 
 
-
-class Teammate(Entity):
-    def __init__(self):
-        super().__init__()
-
-    def __repr__(self):
-        return "Player: {}, Health: {}, Equipped: {}".format(
-            self.name, self.health, self.equipped
-        )
+def check_status(self):
+    if self.health <= 0:
+        self.status = 'dead'
+        return 'Sorry to say that, but the animal is not alive anymore'
+    elif self.health > 0:
+        self.status = 'alive'
+        return 'Animal is alive now (health = ' + str(self.health) + '). Keep him safe.'
 
 
-
-
-
-class Carry(Teammate):
-    def __init__(self):
-        super().__init__()
-        self.name = "Sven"
-        self.health = 1600
-        self.heal = 50
-        self.base_damage = 140
-
-class Support(Teammate):
-    def __init__(self):
-        super().__init__()
-        self.name = "Pudge"
-        self.health = 1350
-        self.heal = 60
-        self.base_damage = 110
-
-class Enemy(Entity):
-    def __init__(self):
-        super().__init__()
-        self.name = "Roshan"
-        self.health = 10000
-        self.heal = 500
-        self.base_damage = 130
-
-class Item:
-    name = ""
+class Carnivore(Animal):
     damage = 0
-    heal = 0
+
+    def __init__(self, type, name, status, age, health, speed, damage):
+        super().__init__(type, name, status, age, health, speed)
+        self.damage = damage
+
+    def attack(self, Herbivore):
+        if (Herbivore.health <= 0):
+            return('Just stop, the animal is already dead')
+        else:
+            if Herbivore.secrecy > 100:
+                tempDamage = random.randint(0, self.damage)
+            elif Herbivore.cunning > 100:
+                tempDamage = self.damage / 2
+            Herbivore.health = Herbivore.health - tempDamage
+            if Herbivore.health < 0:
+                Herbivore.health = 0
+            return ('Ouch! ' + Herbivore.name + ' is hurt. Health points: ' + str(Herbivore.health))
 
 
 
-class Weapon(Item):
+
+
+class Wolf(Carnivore):
 
     def __init__(self):
-        super().__init__()
-        self.type = "weapon"
-
-    def __repr__(self):
-        return "{0}, dmg: {1}".format(" ".join([self.name]), self.damage)
+        super().__init__('Carnivore', 'Wolf', 'alive', 4, 1000, 30, 300)
 
 
-class Desolator(Weapon):
+class Fox(Carnivore):
     def __init__(self):
-        super().__init__()
-        self.name = "Desolator"
-        self.damage = 120
+        super().__init__('Carnivore', 'Fox', 'alive', 3, 1200, 60, 250)
 
-class HearthOfTarascque(Weapon):
+
+class Herbivore(Animal):
+    secrecy = 0
+    cunning = 0
+
+    def __init__(self, type, name, status, age, health, speed, secrecy, cunning):
+        super().__init__(type, name, status, age, health, speed)
+        self.secrecy = secrecy
+        self.cunning = cunning
+
+    def attack(self, Animal):
+        return ("This animal is herbivore. It doesn't want to attack.")
+
+
+class Rabbit(Herbivore):
+
     def __init__(self):
-        super().__init__()
-        self.name = "Tarasq"
-        self.damage = 10
-        self.heal = 100
+        super().__init__('Herbivore', 'Rabbit', 'alive', 2, 800, 70, 110, 5)
 
 
-pos1 = Carry()
-print(pos1)
+class Duck(Herbivore):
 
-pos5 = Support()
-print(pos5)
+    def __init__(self):
+        super().__init__('Herbivore', 'Duck', 'alive', 4, 600, 80, 6, 150)
 
-desol = Desolator()
-tarasq = HearthOfTarascque()
 
-pos1.equip(desol)
-print(pos1)
+R = Rabbit()
+W = Wolf()
 
-pos5.equip(tarasq)
-print(pos5)
+print(check_status(R))
+print(check_status(W))
 
-roshan = Enemy()
+print(R.attack(W))
+while R.health > 0:
+    print(W.attack(R))
 
-roshan.attack(pos5)
-print(pos5)
-roshan.attack(pos5)
-print(pos5)
-roshan.attack(pos5)
-print(pos5)
-
-pos5.healing()
-print(pos5)
-
-pos1.attack(roshan)
-print(roshan)
+print(W.attack(R))
